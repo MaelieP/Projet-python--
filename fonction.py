@@ -203,6 +203,8 @@ def data_1_an(data, annee):
 
     return data_annee
 
+
+#contient la conversion en numeric
 def carte_1_an(emplacements_festivals, fond_de_carte, annee):
 
     #On convertit en numérique et remplace toutes les valeurs qui ne sotn aps numériques par des Nan
@@ -233,30 +235,36 @@ def carte_1_an(emplacements_festivals, fond_de_carte, annee):
 
     return
 
+#ne contient pas la conversion en numeric ni le drop na
+#Renvoi une carte de la France vide si aucuns festival n'a été créé l'année demandée
 def carte_1_an_bis(emplacements_festivals, fond_de_carte, annee):
     # On enlève toutes les lignes dont la valeur de la colonne 'code_insee_commune' est NaN
-    emplacements_festivals = emplacements_festivals.dropna(subset=['annee_de_cr'])
 
     # On enlève les lignes dont la date de création est différente de celle donnée en argument
     emplacements_festivals = emplacements_festivals[emplacements_festivals['annee_de_cr'] == annee]
 
-    print("nb de fetivals cr")
-
-    fig, ax = plt.subplots(figsize=(12, 6))
+    if not emplacements_festivals.empty:
+        fig, ax = plt.subplots(figsize=(12, 6))
 
         # Afficher le fond de carte
-    fond_de_carte.plot(ax=ax, color='lightgray', edgecolor='black')
+        fond_de_carte.plot(ax=ax, color='lightgray', edgecolor='black')
 
         # Afficher les emplacements des festivals
-    emplacements_festivals.plot(ax=ax, color='red', marker='o', markersize=5)
+        emplacements_festivals.plot(ax=ax, color='red', marker='o', markersize=5)
 
         # Ajouter un titre à la carte
-    plt.title(f'Carte des Festivals en France créés en {annee}')
+        plt.title(f'Carte des Festivals en France créés en {annee}')
 
         # Afficher la carte
-    plt.show()
-        #plt.close(fig)
+        plt.show()
 
+        return
+
+    # Si aucuns festivals n'ont été créés cette année, afficher seulement le fond de carte
+    fig, ax = plt.subplots(figsize=(12, 6))
+    fond_de_carte.plot(ax=ax, color='lightgray', edgecolor='black')
+    plt.title(f'Aucun festival créé en France en {annee}')
+    plt.show()
     return
 
 #Génere le fond de carte tout seul
@@ -323,13 +331,13 @@ def festi_sans_dom_shapefile(gdf):
     gdf = gdf.dropna(subset=['code_postal'])
 
     # On affiche les infos du DataFrame avant la condition
-    print("Avant la condition, nombre de lignes =", len(gdf))
+    #print("Avant la condition, nombre de lignes =", len(gdf))
 
     # On enlève les lignes dont le code postal est inférieur à 97000 (code postal des dom-tom)
     gdf_sans_dom = gdf[gdf['code_postal'] < 97000]
 
     # On affiche les infos du DataFrame après la condition
-    print("Après la condition, nombre de lignes =", len(gdf_sans_dom))
+    #print("Après la condition, nombre de lignes =", len(gdf_sans_dom))
 
     return gdf_sans_dom
 
