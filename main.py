@@ -15,9 +15,12 @@ festi = lecture_fichier("festival", "csv")
 shp_festi = lecture_fichier("festival", "shp")
 fond_de_carte = lecture_fichier("carte_region", "shp")
 
+
 #convertit le fichier shp complet en un fichier sans dom tom
 shp_sans_dom = festi_sans_dom_shapefile(shp_festi)
 reg_sans_dom = region_sans_dom(fond_de_carte)
+
+
 
 #On affiche le graphe de tous les emplacements de festival en France
 #carte_fest(shp_sans_dom, reg_sans_dom)
@@ -26,6 +29,7 @@ reg_sans_dom = region_sans_dom(fond_de_carte)
 shp_sans_dom['annee_de_cr'] = pd.to_numeric(shp_sans_dom['annee_de_cr'], errors='coerce')
 carte_1_an_bis(shp_sans_dom, reg_sans_dom, 2001)
 
+plt.plot(reg_sans_dom)
 
 
 '''
