@@ -321,10 +321,10 @@ def festi_sans_dom(data):
 def festi_sans_dom_shapefile(gdf):
 
     #On garde seulement les colonnes qui nous intéressent
-    colonnes_interessantes = ['nom_du_fest', 'code_postal','code_insee_', 'decennie_de', 'annee_de_cr', 'identifiant', 'geometry']
+    colonnes_interessantes = ['nom_du_fest', 'code_postal','code_insee_', 'decennie_de', 'annee_de_cr', 'identifiant', 'geometry', 'annee_creation']
     gdf = gdf[colonnes_interessantes]
 
-    #On convertit en numérique et remplace toutes les valeurs qui ne sotn aps numériques par des Nan
+    #On convertit en numérique et remplace toutes les valeurs qui ne sont pas numériques par des Nan
     gdf['code_postal'] = pd.to_numeric(gdf['code_postal'], errors='coerce')
     
     # On enlève toutes les lignes dont la valeur de la colonne 'code_insee_commune' est NaN
