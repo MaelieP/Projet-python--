@@ -123,11 +123,7 @@ def carte_fest_marche(emplacements_festivals):
 
 
 #Creer une carte des emplacements des festivales en France. En argument: le nom du fichier choisit, ici "festival"
-def carte_fest(emplacements_festivals, fond_de_carte):
-    
-    #On vérifie que les deux crs sont les mêmes - on affiche les résultats
-    print(fond_de_carte.crs)
-    print(emplacements_festivals.crs)
+def carte_fest(emplacements_festivals, fond_de_carte, titre):
 
     # Créer une figure matplotlib
     fig, ax = plt.subplots(figsize=(12, 6))
@@ -139,7 +135,7 @@ def carte_fest(emplacements_festivals, fond_de_carte):
     emplacements_festivals.plot(ax=ax, color='red', marker='o', markersize=5)
 
     # Ajouter un titre à la carte
-    plt.title('Carte des Festivals en France')
+    plt.title(titre)
 
     # Afficher la carte
     plt.show()
@@ -321,7 +317,7 @@ def festi_sans_dom(data):
 def festi_sans_dom_shapefile(gdf):
 
     #On garde seulement les colonnes qui nous intéressent
-    colonnes_interessantes = ['nom_du_fest', 'code_postal','code_insee_', 'decennie_de', 'annee_de_cr', 'identifiant', 'geometry', 'annee_creation']
+    colonnes_interessantes = ['nom_du_fest', 'code_postal','code_insee_', 'decennie_de', 'annee_de_cr', 'identifiant', 'geometry', 'annee_creation', "discipline_", "sous_catego"]
     gdf = gdf[colonnes_interessantes]
 
     #On convertit en numérique et remplace toutes les valeurs qui ne sont pas numériques par des Nan
