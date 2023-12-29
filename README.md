@@ -20,3 +20,5 @@ III. Modélisation
 
 ---
 ## I. Import et nettoyage des données 
+
+On retrouvera dans le code AJOUTER LE FICHIER EXACT tous les détails relatifs à l'import et le netttoyage des données. L'essentiel est que nous avons importer à la fois une base de données "festivals" indiquant pour chaque festival crée en France depuis 1605, son nom, son année de création, sa discipline etc. D'autre part, nous avons merge cette base de données avec une base du recensement au niveau communal afin d'avoir la population par tranche d'âge et par PCS de chaque commune accueillant ou ayant accueilli un festival. 
