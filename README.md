@@ -17,7 +17,7 @@ Nous avons fait ce projet en utilisant Python 3.9.13 et nous vous conseillons d'
 
 ---
 
-Le fichier à exécuter est celui nommé main.pynb
+Le fichier à exécuter est celui nommé **main.pynb**. Attention à ne pas confondre avec main.py !
 
 ## *Plan*
 
