@@ -5,7 +5,69 @@ import matplotlib.pyplot as plt
 import pyproj
 
 
-#------------------------------------------LECTURE DE FICHIER-------------------------------------------
+# ----------------------- FONCTION UTILISEE DANS LE CODE -------------------------------------
+
+#Creer une carte des emplacements des festivales en France. En argument: le nom du fichier choisit, ici "festival"
+def carte_fest(emplacements_festivals, fond_de_carte, titre):
+
+    # Créer une figure matplotlib
+    fig, ax = plt.subplots(figsize=(12, 6))
+    
+    # Afficher le fond de carte
+    fond_de_carte.plot(ax=ax, color='lightgray', edgecolor='black')
+
+    # Afficher les emplacements des festivals
+    emplacements_festivals.plot(ax=ax, color='red', marker='o', markersize=5)
+
+    # Ajouter un titre à la carte
+    plt.title(titre)
+
+    # Afficher la carte
+    plt.show()
+
+    return
+
+#Génere le fond de carte tout seul
+def make_fond_carte(fond_de_carte):
+    fig, ax = plt.subplots(figsize=(12, 6))
+    fond_de_carte.plot(ax=ax, color='lightgray', edgecolor='black')
+    return fig, ax
+
+#Prend un fichier shapefile des emplacements de festivak et enlèves les colonnes non necessaires, ainsi que les lognes correspondant aux domtom
+def festi_sans_dom_shapefile(gdf):
+
+    #On garde seulement les colonnes qui nous intéressent
+    colonnes_interessantes = ['nom_du_fest', 'code_postal','code_insee_', 'decennie_de', 'annee_de_cr', 'identifiant', 'geometry', 'annee_creation', "discipline_", "sous_catego"]
+    gdf = gdf[colonnes_interessantes]
+
+    #On convertit en numérique et remplace toutes les valeurs qui ne sont pas numériques par des Nan
+    gdf['code_postal'] = pd.to_numeric(gdf['code_postal'], errors='coerce')
+    
+    # On enlève toutes les lignes dont la valeur de la colonne 'code_insee_commune' est NaN
+    gdf = gdf.dropna(subset=['code_postal'])
+
+    # On affiche les infos du DataFrame avant la condition
+    #print("Avant la condition, nombre de lignes =", len(gdf))
+
+    # On enlève les lignes dont le code postal est inférieur à 97000 (code postal des dom-tom)
+    gdf_sans_dom = gdf[gdf['code_postal'] < 97000]
+
+    # On affiche les infos du DataFrame après la condition
+    #print("Après la condition, nombre de lignes =", len(gdf_sans_dom))
+
+    return gdf_sans_dom
+
+def region_sans_dom(data):
+    data = data.drop([0, 2, 7, 11, 13])
+    # Réindexer le DataFrame après la suppression des lignes
+    data = data.reset_index(drop=True)
+
+    #Truc chelou: st pierre et miquelon est rattaché à l'académie de Caen, on cherche à l'enlever
+
+    return data
+
+
+# ---------------------- FONCTIONS NON UTILISEES DANS LE CODE FINAL ---------------------------
 
 #Transforme le fichier en 1 fichier markdown qui s'affiche bien sur vscode.
 def into_md(data, nom):
@@ -20,8 +82,6 @@ def into_md(data, nom):
         fichier_md.write(markdown)
 
     return
-
-
 
 #Donne la ligne numéro "ligne" d'un dataframe sous forme de liste
 def ligne(numero_ligne, data):
@@ -67,23 +127,6 @@ def lecture_fichier(nom, extension):
 
     return fichier
 
-'''
-url et chemin des fichiers
-url_fest_evid = "https://www.data.gouv.fr/fr/datasets/liste-des-festivals-en-france/#/resources/47ac11c2-8a00-46a7-9fa8-9b802643f975"
-url_fest = "https://data.culture.gouv.fr/explore/dataset/festivals-global-festivals-_-pl/download?format=csv&timezone=Europe/Berlin&use_labels_for_header=false"
-url_fest_stable = "https://www.data.gouv.fr/fr/datasets/r/47ac11c2-8a00-46a7-9fa8-9b802643f975"
-chemin_fichier_fest = "C:/Users/lilou/Documents/Backup Lilou 20220527/Bureau/IMPORTANT/ENSAE/PYTHON CROUS/festivals-global-festivals-_-pl.csv"
-chemin_fichier_fdcarte = "C:/Users/lilou/Documents/Backup Lilou 20220527/Bureau/IMPORTANT/ENSAE/PYTHON CROUS/fond_carte/regions_2015_metropole_region.shp"
-chemin_fichier_fest_sh = "C:/Users/lilou/Documents/Backup Lilou 20220527/Bureau/IMPORTANT/ENSAE/PYTHON CROUS/festivals-global-festivals/festivals-global-festivals-_-pl.shp"
-chemin_fichier_pano = "C:/Users/lilou/Documents/Backup Lilou 20220527/Bureau/IMPORTANT/ENSAE/PYTHON CROUS/panorama-des-festivals.csv"
-'''
-
-
-
-
-
-#-------------------------------------CARTE-------------------------------------------
-
 def carte_fest_marche(emplacements_festivals):
     
     # Charger le fond de carte de la France
@@ -112,30 +155,6 @@ def carte_fest_marche(emplacements_festivals):
 
     # Ajouter un titre à la carte
     plt.title('Carte des Festivals en France')
-
-    # Afficher la carte
-    plt.show()
-
-    return
-
-
-
-
-
-#Creer une carte des emplacements des festivales en France. En argument: le nom du fichier choisit, ici "festival"
-def carte_fest(emplacements_festivals, fond_de_carte, titre):
-
-    # Créer une figure matplotlib
-    fig, ax = plt.subplots(figsize=(12, 6))
-    
-    # Afficher le fond de carte
-    fond_de_carte.plot(ax=ax, color='lightgray', edgecolor='black')
-
-    # Afficher les emplacements des festivals
-    emplacements_festivals.plot(ax=ax, color='red', marker='o', markersize=5)
-
-    # Ajouter un titre à la carte
-    plt.title(titre)
 
     # Afficher la carte
     plt.show()
@@ -198,7 +217,6 @@ def data_1_an(data, annee):
     data_annee = datacop[datacop['annee_de_cr'] == annee]
 
     return data_annee
-
 
 #contient la conversion en numeric
 def carte_1_an(emplacements_festivals, fond_de_carte, annee):
@@ -263,12 +281,6 @@ def carte_1_an_bis(emplacements_festivals, fond_de_carte, annee):
     plt.show()
     return
 
-#Génere le fond de carte tout seul
-def make_fond_carte(fond_de_carte):
-    fig, ax = plt.subplots(figsize=(12, 6))
-    fond_de_carte.plot(ax=ax, color='lightgray', edgecolor='black')
-    return fig, ax
-
 #Génere une carte de la france avec les emplacements des festivals 
 def carte_1_an_rapide(emplacements_festivals, ax, annee):
     # Cette fonction marche si on a déja convertit les valeurs en numérique et remplacé toutes les valeurs qui ne sont pas numériques par des NaN
@@ -284,7 +296,6 @@ def carte_1_an_rapide(emplacements_festivals, ax, annee):
 
     # On affiche la carte
     return layer
-
 
 #Enlève du dataframe les festivals hors france métropolitaine
 def festi_sans_dom(data):
@@ -313,30 +324,6 @@ def festi_sans_dom(data):
 
     return data_sans_dom
 
-#Prend un fichier shapefile des emplacements de festivak et enlèves les colonnes non necessaires, ainsi que les lognes correspondant aux domtom
-def festi_sans_dom_shapefile(gdf):
-
-    #On garde seulement les colonnes qui nous intéressent
-    colonnes_interessantes = ['nom_du_fest', 'code_postal','code_insee_', 'decennie_de', 'annee_de_cr', 'identifiant', 'geometry', 'annee_creation', "discipline_", "sous_catego"]
-    gdf = gdf[colonnes_interessantes]
-
-    #On convertit en numérique et remplace toutes les valeurs qui ne sont pas numériques par des Nan
-    gdf['code_postal'] = pd.to_numeric(gdf['code_postal'], errors='coerce')
-    
-    # On enlève toutes les lignes dont la valeur de la colonne 'code_insee_commune' est NaN
-    gdf = gdf.dropna(subset=['code_postal'])
-
-    # On affiche les infos du DataFrame avant la condition
-    #print("Avant la condition, nombre de lignes =", len(gdf))
-
-    # On enlève les lignes dont le code postal est inférieur à 97000 (code postal des dom-tom)
-    gdf_sans_dom = gdf[gdf['code_postal'] < 97000]
-
-    # On affiche les infos du DataFrame après la condition
-    #print("Après la condition, nombre de lignes =", len(gdf_sans_dom))
-
-    return gdf_sans_dom
-
 def academie_sans_dom(data):
     data = data.drop([10, 11, 12, 13])
     # Réindexer le DataFrame après la suppression des lignes
@@ -345,21 +332,6 @@ def academie_sans_dom(data):
     #Truc chelou: st pierre et miquelon est rattaché à l'académie de Caen, on cherche à l'enlever
 
     return data
-
-def region_sans_dom(data):
-    data = data.drop([0, 2, 7, 11, 13])
-    # Réindexer le DataFrame après la suppression des lignes
-    data = data.reset_index(drop=True)
-
-    #Truc chelou: st pierre et miquelon est rattaché à l'académie de Caen, on cherche à l'enlever
-
-    return data
-
-
-
-
-
-#-----------------------------------------HISTOGRAMME-----------------------------------------------
 
 #Construit un histogramme du nombre de festival créés par année pour le fichier festival
 def hist_date_festi(data):
@@ -385,7 +357,7 @@ def hist_date_festi(data):
 def hist_date_pano(data):
 
     #On extrait la colonne date de création
-    date_creation = data['date_de_creation']
+    date_creation = data['date_d[e_creation']
     print(date_creation)
 
     #On creer un histogramme avec le nombre de creation de festival en fonction du temps
@@ -400,41 +372,4 @@ def hist_date_pano(data):
     # Afficher l'histogramme
     plt.show()
     return
-
-
-'''
-
-#Répare la colonne date de création du dataframe festival - EN COURS DE CONSTRUCTION
-def reparation_date(data):
-    date_creation = data['annee_de_creation_du_festival']
-    print(date_creation)
-
-#on récup les dates
-date_creation = festi['annee_de_creation_du_festival']
-print(date_creation)
-
-# on parcours les dates
-
-
-# Vérifier si les éléments de la colonne 'Date' ont la forme d'une année à 4 chiffres
-dates_valides = date_creation.astype(str).str.match(r'^\d{4}$') | date_creation.isna()
-dates_non_valides = ~date_creation.astype(str).str.match(r'^\d{4}$')
-
-print(dates_valides)
-
-# Afficher les lignes où la condition est vraie
-resultat = festi[dates_non_valides]
-print(resultat)
-
-into_md(resultat)
-
-
-    return
-
-'''
-
-
-
-
-
 
